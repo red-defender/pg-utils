@@ -55,7 +55,7 @@ SELECT
     a.usesysid,
     a.usename,
     a.application_name,
-    c.client_addr,
+    NULLIF(c.client_addr, 'unix')::INET AS client_addr,
     a.client_hostname,
     CASE WHEN c.client_addr = 'unix' THEN c.client_pid ELSE c.client_port END AS client_port,
     a.backend_start,
