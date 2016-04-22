@@ -33,14 +33,73 @@ plain_locks AS (
         pg_locks AS l
         INNER JOIN pg_stat_activity AS a ON (a.pid = l.pid)
 ),
+lock_modes (mode, weight, conflicts) AS (
+    VALUES
+    ('AccessShareLock', 1, ARRAY[
+        'AccessExclusiveLock'
+    ]),
+    ('RowShareLock', 2, ARRAY[
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('RowExclusiveLock', 3, ARRAY[
+        'ShareLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('ShareUpdateExclusiveLock', 4, ARRAY[
+        'ShareUpdateExclusiveLock',
+        'ShareLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('ShareLock', 5, ARRAY[
+        'RowExclusiveLock',
+        'ShareUpdateExclusiveLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('ShareRowExclusiveLock', 6, ARRAY[
+        'RowExclusiveLock',
+        'ShareUpdateExclusiveLock',
+        'ShareLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('ExclusiveLock', 7, ARRAY[
+        'RowShareLock',
+        'RowExclusiveLock',
+        'ShareUpdateExclusiveLock',
+        'ShareLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ]),
+    ('AccessExclusiveLock', 8, ARRAY[
+        'AccessShareLock',
+        'RowShareLock',
+        'RowExclusiveLock',
+        'ShareUpdateExclusiveLock',
+        'ShareLock',
+        'ShareRowExclusiveLock',
+        'ExclusiveLock',
+        'AccessExclusiveLock'
+    ])
+),
 direct_links AS (
-    SELECT
+    SELECT DISTINCT
         l.pid AS locking_pid,
         l.lock_type,
         l.locked_object,
+        LAST_VALUE(l.mode) OVER (PARTITION BY l.pid, l.lock_type, l.locked_object ORDER BY m.weight) AS mode,
         w.pid AS waiting_pid
     FROM
         plain_locks AS l
+        INNER JOIN lock_modes AS m ON (m.mode = l.mode)
         INNER JOIN plain_locks AS w ON (
             w.lock_type = l.lock_type
             AND
@@ -49,6 +108,8 @@ direct_links AS (
             l.granted
             AND
             NOT w.granted
+            AND
+            w.mode = ANY(m.conflicts)
         )
 ),
 lock_links AS (
@@ -79,6 +140,8 @@ locks_tree AS (
                 ll.lock_type = pl.lock_type
                 AND
                 ll.locked_object = pl.locked_object
+                AND
+                ll.mode = pl.mode
         )
     UNION ALL
     SELECT
@@ -115,6 +178,8 @@ locks_tree AS (
                 ll.lock_type = pl.lock_type
                 AND
                 ll.locked_object = pl.locked_object
+                AND
+                ll.mode = pl.mode
         )
 )
 SELECT
