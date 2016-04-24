@@ -10,8 +10,10 @@ plain_locks AS (
             l.transactionid::TEXT,
             l.virtualxid,
             CASE
-                WHEN l.locktype = 'advisory' AND l.objsubid = 1 THEN ((l.classid::BIGINT << 32) | l.objid::BIGINT)::TEXT
-                WHEN l.locktype = 'advisory' AND l.objsubid = 2 THEN l.classid::TEXT || '.' || l.objid::TEXT
+                WHEN l.locktype = 'advisory' AND l.objsubid = 1
+                    THEN l.database::TEXT || '.' || ((l.classid::BIGINT << 32) | l.objid::BIGINT)::TEXT
+                WHEN l.locktype = 'advisory' AND l.objsubid = 2
+                    THEN l.database::TEXT || '.' || l.classid::TEXT || '.' || l.objid::TEXT
                 ELSE l.classid::TEXT || '.' || l.objid::TEXT || '.' || l.objsubid::TEXT
             END,
             l.classid::TEXT || '.' || l.objid::TEXT,
