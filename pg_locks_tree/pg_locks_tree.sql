@@ -35,70 +35,24 @@ plain_locks AS (
         pg_locks AS l
         INNER JOIN pg_stat_activity AS a ON (a.pid = l.pid)
 ),
-lock_modes (mode, weight, conflicts) AS (
+lock_modes (weight, mode) AS (
     VALUES
-    ('AccessShareLock', 1, ARRAY[
-        'AccessExclusiveLock'
-    ]),
-    ('RowShareLock', 2, ARRAY[
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('RowExclusiveLock', 3, ARRAY[
-        'ShareLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('ShareUpdateExclusiveLock', 4, ARRAY[
-        'ShareUpdateExclusiveLock',
-        'ShareLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('ShareLock', 5, ARRAY[
-        'RowExclusiveLock',
-        'ShareUpdateExclusiveLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('ShareRowExclusiveLock', 6, ARRAY[
-        'RowExclusiveLock',
-        'ShareUpdateExclusiveLock',
-        'ShareLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('ExclusiveLock', 7, ARRAY[
-        'RowShareLock',
-        'RowExclusiveLock',
-        'ShareUpdateExclusiveLock',
-        'ShareLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ]),
-    ('AccessExclusiveLock', 8, ARRAY[
-        'AccessShareLock',
-        'RowShareLock',
-        'RowExclusiveLock',
-        'ShareUpdateExclusiveLock',
-        'ShareLock',
-        'ShareRowExclusiveLock',
-        'ExclusiveLock',
-        'AccessExclusiveLock'
-    ])
+    (1, 'AccessShareLock'),
+    (2, 'RowShareLock'),
+    (3, 'RowExclusiveLock'),
+    (4, 'ShareUpdateExclusiveLock'),
+    (5, 'ShareLock'),
+    (6, 'ShareRowExclusiveLock'),
+    (7, 'ExclusiveLock'),
+    (8, 'AccessExclusiveLock')
 ),
 direct_links AS (
-    SELECT DISTINCT
+    SELECT
         l.pid AS locking_pid,
         l.lock_type,
         l.locked_object,
-        LAST_VALUE(l.mode) OVER (PARTITION BY l.pid, l.lock_type, l.locked_object ORDER BY m.weight) AS mode,
-        w.pid AS waiting_pid
+        w.pid AS waiting_pid,
+        (ARRAY_AGG(l.mode ORDER BY m.weight DESC))[1] AS mode
     FROM
         plain_locks AS l
         INNER JOIN lock_modes AS m ON (m.mode = l.mode)
@@ -110,9 +64,9 @@ direct_links AS (
             l.granted
             AND
             NOT w.granted
-            AND
-            w.mode = ANY(m.conflicts)
         )
+    GROUP BY
+        1, 2, 3, 4
 ),
 lock_links AS (
     SELECT
