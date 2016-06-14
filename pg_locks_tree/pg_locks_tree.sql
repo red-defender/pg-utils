@@ -139,7 +139,7 @@ locks_tree AS (
         )
 )
 SELECT
-    LPAD('=>', depth * 2, ' ') AS tree,
+    LPAD('->', depth * 2, ' ') AS tree,
     pid,
     lock_type,
     locked_object,
