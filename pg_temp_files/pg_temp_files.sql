@@ -45,10 +45,12 @@ temp_files AS (
 SELECT
     pid,
     tablespace,
-    COUNT(1) AS file_count,
+    COUNT((file).size) AS file_count,
     SUM((file).size)::BIGINT AS total_size,
     MAX((file).modification) AS last_modification
 FROM
     temp_files
 GROUP BY
-    1, 2;
+    1, 2
+HAVING
+    COUNT((file).size) > 0;
