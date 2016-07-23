@@ -28,6 +28,7 @@ plain_locks AS (
         a.state,
         a.waiting,
         a.query,
+        a.application_name,
         a.usename AS username,
         a.query_start,
         a.xact_start
@@ -148,6 +149,7 @@ SELECT
     mode,
     state,
     username,
+    application_name,
     query_start,
     xact_start,
     query
