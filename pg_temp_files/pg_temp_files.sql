@@ -1,3 +1,4 @@
+-- Lowest compatible version: PostgreSQL 9.5.
 CREATE OR REPLACE VIEW pg_temp_files AS
 WITH RECURSIVE
 tablespace_dirs AS (
@@ -6,7 +7,7 @@ tablespace_dirs AS (
         'pg_tblspc/' || dirname || '/' AS path,
         1 AS depth
     FROM
-        PG_LS_DIR('pg_tblspc/', TRUE, FALSE) AS dirname
+        pg_catalog.PG_LS_DIR('pg_tblspc/', TRUE, FALSE) AS dirname
     UNION ALL
     SELECT
         subdir,
@@ -14,7 +15,7 @@ tablespace_dirs AS (
         td.depth + 1
     FROM
         tablespace_dirs AS td,
-        PG_LS_DIR(td.path, TRUE, FALSE) AS subdir
+        pg_catalog.PG_LS_DIR(td.path, TRUE, FALSE) AS subdir
     WHERE
         td.depth < 3
 ),
@@ -24,7 +25,7 @@ temp_dirs AS (
         ts.spcname AS tablespace
     FROM
         tablespace_dirs AS td
-        INNER JOIN pg_tablespace AS ts ON (ts.oid = SUBSTRING(td.path FROM 'pg_tblspc/(\d+)')::INT)
+        INNER JOIN pg_catalog.pg_tablespace AS ts ON (ts.oid = SUBSTRING(td.path FROM 'pg_tblspc/(\d+)')::INT)
     WHERE
         td.depth = 3
         AND
@@ -40,7 +41,7 @@ temp_files AS (
         PG_STAT_FILE(td.path || '/' || filename, TRUE) AS file
     FROM
         temp_dirs AS td,
-        PG_LS_DIR(td.path, TRUE, FALSE) AS filename
+        pg_catalog.PG_LS_DIR(td.path, TRUE, FALSE) AS filename
 )
 SELECT
     pid,

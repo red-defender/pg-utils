@@ -1,3 +1,4 @@
+-- Lowest compatible version: PostgreSQL 9 (see comments lower).
 CREATE OR REPLACE VIEW pg_locks_tree AS
 WITH RECURSIVE
 plain_locks AS (
@@ -26,15 +27,18 @@ plain_locks AS (
         l.mode,
         l.granted,
         a.state,
-        a.waiting,
+        a.wait_event_type IS NOT DISTINCT FROM 'Lock' AS waiting, -- Remove this field for PostgreSQL 9.5 and lower.
+        --a.waiting, -- Enable this field for PostgreSQL 9.5 and lower.
+        a.wait_event_type, -- Remove this field for PostgreSQL 9.5 and lower.
+        a.wait_event, -- Remove this field for PostgreSQL 9.5 and lower.
         a.query,
         a.application_name,
         a.usename AS username,
         a.query_start,
         a.xact_start
     FROM
-        pg_locks AS l
-        INNER JOIN pg_stat_activity AS a ON (a.pid = l.pid)
+        pg_catalog.pg_locks AS l
+        INNER JOIN pg_catalog.pg_stat_activity AS a ON (a.pid = l.pid)
 ),
 lock_modes (weight, mode) AS (
     VALUES
@@ -144,6 +148,8 @@ SELECT
     pid,
     lock_type,
     locked_object,
+    wait_event_type, -- Remove this field for PostgreSQL 9.5 and lower.
+    wait_event, -- Remove this field for PostgreSQL 9.5 and lower.
     relation,
     virtual_xid,
     mode,

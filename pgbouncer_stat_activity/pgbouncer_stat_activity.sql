@@ -1,3 +1,4 @@
+-- Lowest compatible version: PostgreSQL 9, pgBouncer 1.6 (see comments lower).
 CREATE OR REPLACE VIEW pgbouncer_stat_activity AS
 WITH
 servers AS (
@@ -20,7 +21,7 @@ servers AS (
             ptr TEXT,
             link TEXT,
             remote_pid INT,
-            tls TEXT
+            tls TEXT -- Remove this field for pgBouncer 1.6.
         )
 ),
 clients AS (
@@ -45,7 +46,7 @@ clients AS (
             ptr TEXT,
             link TEXT,
             remote_pid INT,
-            tls TEXT
+            tls TEXT -- Remove this field for pgBouncer 1.6.
         )
 )
 SELECT
@@ -62,12 +63,14 @@ SELECT
     a.xact_start,
     a.query_start,
     a.state_change,
-    a.waiting,
+    a.wait_event_type, -- Remove this field for PostgreSQL 9.5 and lower.
+    a.wait_event, -- Remove this field for PostgreSQL 9.5 and lower.
+    --a.waiting, -- Enable this field for PostgreSQL 9.5 and lower.
     a.state,
-    a.backend_xid,
-    a.backend_xmin,
+    a.backend_xid, -- Remove this field for PostgreSQL 9.3 and lower.
+    a.backend_xmin, -- Remove this field for PostgreSQL 9.3 and lower.
     a.query
 FROM
-    pg_stat_activity AS a
+    pg_catalog.pg_stat_activity AS a
     INNER JOIN servers AS s ON (s.server_pid = a.pid)
     INNER JOIN clients AS c ON (c.client_ptr = s.server_link AND c.client_link = s.server_ptr);
