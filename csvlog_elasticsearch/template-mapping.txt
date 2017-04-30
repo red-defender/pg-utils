@@ -1,0 +1,93 @@
+PUT /_template/postgresql
+{
+    "template" : "postgresql-*",
+    "mappings" : {
+        "postgresql" : {
+            "properties" : {
+                "application_name" : {
+                    "type" : "string"
+                },
+                "command_tag" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "connection_from" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "context" : {
+                    "type" : "string"
+                },
+                "database_name" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "detail" : {
+                    "type" : "string"
+                },
+                "error_severity" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "hint" : {
+                    "type" : "string"
+                },
+                "hostname" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "internal_query" : {
+                    "type" : "string"
+                },
+                "internal_query_pos" : {
+                    "type" : "integer"
+                },
+                "location" : {
+                    "type" : "string"
+                },
+                "log_time" : {
+                    "type" : "date",
+                    "format" : "yyyy-MM-dd HH:mm:ss.SSS ZZZ"
+                },
+                "message" : {
+                    "type" : "string"
+                },
+                "process_id" : {
+                    "type" : "integer"
+                },
+                "query" : {
+                    "type" : "string"
+                },
+                "query_pos" : {
+                    "type" : "integer"
+                },
+                "session_id" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "session_line_num" : {
+                    "type" : "long"
+                },
+                "session_start_time" : {
+                    "type" : "date",
+                    "format" : "yyyy-MM-dd HH:mm:ss ZZZ"
+                },
+                "sql_state_code" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "transaction_id" : {
+                    "type" : "long"
+                },
+                "user_name" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "virtual_transaction_id" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                }
+            }
+        }
+    }
+}
