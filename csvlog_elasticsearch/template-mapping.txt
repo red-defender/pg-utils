@@ -5,65 +5,59 @@ PUT /_template/postgresql
         "postgresql" : {
             "properties" : {
                 "application_name" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "command_tag" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "connection_from" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "context" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "database_name" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "detail" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "error_severity" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "hint" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "hostname" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "internal_query" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "internal_query_pos" : {
                     "type" : "integer"
                 },
                 "location" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
-                "log_time" : {
+                "@timestamp" : {
                     "type" : "date",
                     "format" : "yyyy-MM-dd HH:mm:ss.SSS ZZZ"
                 },
                 "message" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "process_id" : {
                     "type" : "integer"
                 },
                 "query" : {
-                    "type" : "string"
+                    "type" : "text"
                 },
                 "query_pos" : {
                     "type" : "integer"
                 },
                 "session_id" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "session_line_num" : {
                     "type" : "long"
@@ -73,19 +67,16 @@ PUT /_template/postgresql
                     "format" : "yyyy-MM-dd HH:mm:ss ZZZ"
                 },
                 "sql_state_code" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "transaction_id" : {
                     "type" : "long"
                 },
                 "user_name" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 },
                 "virtual_transaction_id" : {
-                    "type" : "string",
-                    "index" : "not_analyzed"
+                    "type" : "keyword"
                 }
             }
         }
