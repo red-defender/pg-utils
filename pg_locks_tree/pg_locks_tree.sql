@@ -33,6 +33,7 @@ plain_locks AS (
         a.wait_event, -- Remove this field for PostgreSQL 9.5 and lower.
         a.query,
         a.application_name,
+        a.backend_type, -- Remove this field for PostgreSQL 9.6 and lower.
         a.usename AS username,
         a.query_start,
         a.xact_start
@@ -156,6 +157,7 @@ SELECT
     state,
     username,
     application_name,
+    backend_type, -- Remove this field for PostgreSQL 9.6 and lower.
     query_start,
     xact_start,
     query

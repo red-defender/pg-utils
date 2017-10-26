@@ -69,7 +69,8 @@ SELECT
     a.state,
     a.backend_xid, -- Remove this field for PostgreSQL 9.3 and lower.
     a.backend_xmin, -- Remove this field for PostgreSQL 9.3 and lower.
-    a.query
+    a.query,
+    a.backend_type -- Remove this field for PostgreSQL 9.6 and lower.
 FROM
     pg_catalog.pg_stat_activity AS a
     INNER JOIN servers AS s ON (s.server_pid = a.pid)
