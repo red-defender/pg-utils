@@ -18,6 +18,9 @@ servers AS (
             local_port INT,
             connect_time TIMESTAMPTZ,
             request_time TIMESTAMPTZ,
+            wait INT, -- Remove this field for pgBouncer 1.7 and lower.
+            wait_us INT, -- Remove this field for pgBouncer 1.7 and lower.
+            close_needed INT, -- Remove this field for pgBouncer 1.8 and lower.
             ptr TEXT,
             link TEXT,
             remote_pid INT,
@@ -43,6 +46,9 @@ clients AS (
             local_port INT,
             connect_time TIMESTAMPTZ,
             request_time TIMESTAMPTZ,
+            wait INT, -- Remove this field for pgBouncer 1.7 and lower.
+            wait_us INT, -- Remove this field for pgBouncer 1.7 and lower.
+            close_needed INT, -- Remove this field for pgBouncer 1.8 and lower.
             ptr TEXT,
             link TEXT,
             remote_pid INT,
